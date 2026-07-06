@@ -5,6 +5,7 @@ import com.odtheking.odin.events.BlockInteractEvent;
 import com.odtheking.odin.events.EntityInteractEvent;
 import com.odtheking.odin.features.impl.boss.TerminalSolver;
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils;
+import com.odtheking.odin.utils.ui.rendering.SkijaRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -39,5 +40,15 @@ public abstract class MinecraftMixin {
     private Object modifyGuiScaleValue(Object original) {
         if (TerminalUtils.getCurrentTerm() != null && TerminalSolver.getTermSize() != (Integer) original) return TerminalSolver.getTermSize();
         return original;
+    }
+
+    @Inject(method = "close", at = @At("HEAD"))
+    private void cleanupSkijaOnClose(CallbackInfo ci) {
+        SkijaRenderer.cleanup();
+    }
+
+    @Inject(method = "emergencySave", at = @At("HEAD"))
+    private void cleanupSkijaOnEmergencySave(CallbackInfo ci) {
+        SkijaRenderer.cleanup();
     }
 }

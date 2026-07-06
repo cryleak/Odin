@@ -1,46 +1,25 @@
 package com.odtheking.odin.utils.ui.rendering
 
-import com.mojang.blaze3d.opengl.GlConst
-import com.mojang.blaze3d.opengl.GlDevice
-import com.mojang.blaze3d.opengl.GlStateManager
-import com.mojang.blaze3d.opengl.GlTexture
-import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
+import com.odtheking.odin.OdinMod.mc
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
-import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 import org.joml.Matrix3x2f
-import org.lwjgl.opengl.GL33C
+import java.util.ArrayDeque
 
-class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureInPictureRenderer<NVGPIPRenderer.NVGRenderState>(vertexConsumers) {
+class NVGPIPRenderer : PictureInPictureRenderer<NVGPIPRenderer.NVGRenderState>() {
 
-    override fun renderToTexture(state: NVGRenderState, poseStack: PoseStack) {
-        val colorTex = RenderSystem.outputColorTextureOverride ?: return
-        val bufferManager = (RenderSystem.getDevice().backend as? GlDevice)?.directStateAccess() ?: return
-        val glDepthTex = (RenderSystem.outputDepthTextureOverride?.texture() as? GlTexture) ?: return
-
-        val (width, height) = colorTex.let { it.getWidth(0) to it.getHeight(0) }
-        (colorTex.texture() as? GlTexture)?.getFbo(bufferManager, glDepthTex)?.apply {
-            GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, this)
-            GlStateManager._viewport(0, 0, width, height)
-        }
-
-        GL33C.glBindSampler(0, 0)
-        NVGRenderer.beginFrame(width.toFloat(), height.toFloat())
-        state.renderContent()
-        NVGRenderer.endFrame()
-
-        GlStateManager._disableDepthTest()
-        GlStateManager._disableCull()
-        GlStateManager._enableBlend()
-        GlStateManager._blendFuncSeparate(770, 771, 1, 0)
-    }
-
-    override fun getTranslateY(height: Int, windowScaleFactor: Int): Float = height / 2f
+    override fun renderToTexture(state: NVGRenderState, poseStack: PoseStack, submitNodeCollector: SubmitNodeCollector) = Unit
     override fun getRenderStateClass(): Class<NVGRenderState> = NVGRenderState::class.java
-    override fun getTextureLabel(): String = "nvg_renderer"
+    override fun getTextureLabel(): String = "odin_skija_renderer"
+
+    enum class CoordinateSpace {
+        WINDOW,
+        GUI
+    }
 
     data class NVGRenderState(
         private val x: Int,
@@ -50,6 +29,7 @@ class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureI
         private val poseMatrix: Matrix3x2f,
         private val scissor: ScreenRectangle?,
         private val bounds: ScreenRectangle?,
+        val coordinateSpace: CoordinateSpace,
         val renderContent: () -> Unit
     ) : PictureInPictureRenderState {
 
@@ -58,39 +38,69 @@ class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureI
         override fun y0(): Int = y
         override fun x1(): Int = x + width
         override fun y1(): Int = y + height
+        override fun pose(): Matrix3x2f = poseMatrix
         override fun scissorArea(): ScreenRectangle? = scissor
         override fun bounds(): ScreenRectangle? = bounds
     }
 
     companion object {
-        /**
-         * Draw NVG content as a special GUI element.
-         *
-         * @param context The GuiGraphics to draw to
-         * @param x The x position
-         * @param y The y position
-         * @param width The width of the rendering area
-         * @param height The height of the rendering area
-         * @param renderContent A lambda that draws the NVG content
-         */
+        private val pending = ArrayDeque<NVGRenderState>()
+
         fun draw(
             context: GuiGraphicsExtractor,
             x: Int,
             y: Int,
             width: Int,
             height: Int,
+            coordinateSpace: CoordinateSpace = CoordinateSpace.WINDOW,
             renderContent: () -> Unit
         ) {
             val scissor = context.scissorStack.peek()
             val pose = Matrix3x2f(context.pose())
             val bounds = createBounds(x, y, x + width, y + height, pose, scissor)
+            pending.addLast(NVGRenderState(x, y, width, height, pose, scissor, bounds, coordinateSpace, renderContent))
+            SkijaRenderer.invalidateOverlay()
+        }
 
-            val state = NVGRenderState(
-                x, y, width, height,
-                pose, scissor, bounds,
-                renderContent
-            )
-            context.guiRenderState.addPicturesInPictureState(state)
+        @JvmStatic
+        fun renderQueuedOverlay(screenWidth: Int, screenHeight: Int): Boolean {
+            if (pending.isEmpty()) {
+                SkijaRenderer.invalidateOverlay()
+                return false
+            }
+
+            if (!SkijaRenderer.beginOverlayFrame(screenWidth.toFloat(), screenHeight.toFloat())) return false
+            try {
+                while (pending.isNotEmpty()) {
+                    val state = pending.removeFirst()
+                    NVGRenderer.push()
+                    val scissor = state.scissorArea()
+                    val scale = if (state.coordinateSpace == CoordinateSpace.GUI) mc.window.guiScale.toFloat() else 1f
+                    try {
+                        if (scissor != null) {
+                            NVGRenderer.pushScissor(
+                                scissor.left().toFloat() * scale,
+                                scissor.top().toFloat() * scale,
+                                scissor.width().toFloat() * scale,
+                                scissor.height().toFloat() * scale
+                            )
+                        }
+                        if (scale != 1f) {
+                            NVGRenderer.scale(scale, scale)
+                        }
+                        SkijaRenderer.concat(state.pose())
+                        state.renderContent()
+                    } finally {
+                        if (scissor != null) {
+                            NVGRenderer.popScissor()
+                        }
+                        NVGRenderer.pop()
+                    }
+                }
+            } finally {
+                SkijaRenderer.endOverlayFrame()
+            }
+            return SkijaRenderer.compositeOverlay()
         }
 
         private fun createBounds(x0: Int, y0: Int, x1: Int, y1: Int, pose: Matrix3x2f, scissorArea: ScreenRectangle?): ScreenRectangle? {
@@ -99,4 +109,3 @@ class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureI
         }
     }
 }
-

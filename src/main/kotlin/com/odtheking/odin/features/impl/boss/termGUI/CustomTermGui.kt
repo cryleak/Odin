@@ -9,8 +9,9 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedFill
-import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
+import com.odtheking.odin.utils.ui.rendering.SkijaRenderer
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -64,7 +65,7 @@ abstract class TermGui {
         )
     }
 
-    private fun currentTermScreen() = mc.screen as? AbstractContainerScreen<*>
+    private fun currentTermScreen() = mc.gui.screen() as? AbstractContainerScreen<*>
 
     private fun isActiveTermScreen(): Boolean {
         if (!TerminalSolver.customGuiEnabled || TerminalUtils.currentTerm == null || currentTermScreen() == null) return false
@@ -106,7 +107,7 @@ abstract class TermGui {
 
     fun customTerminalClick(slotIndex: Int, button: Int) {
         TerminalUtils.currentTerm?.let { term ->
-            val screen = mc.screen ?: return@let
+            val screen = mc.gui.screen() ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
             if (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt &&
                 !GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&
@@ -139,8 +140,19 @@ abstract class TermGui {
         guiGraphics.pose().popMatrix()
     }
 
-    protected fun GuiGraphicsExtractor.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) =
-        text(text, x + (width - mc.font.width(text)) / 2, y + (height - mc.font.lineHeight) / 2 + 1, color)
+    protected fun GuiGraphicsExtractor.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) {
+        NVGPIPRenderer.draw(this, x, y, width, height, NVGPIPRenderer.CoordinateSpace.GUI) {
+            val size = 9f
+            val textWidth = SkijaRenderer.textWidth(text, size, SkijaRenderer.defaultFont)
+            SkijaRenderer.text(
+                text,
+                x + (width - textWidth) / 2f,
+                y + (height - size) / 2f + 1f,
+                size,
+                color.rgba
+            )
+        }
+    }
 }
 
 fun simpleTermGui(rows: Int, cols: Int, startRow: Int, startCol: Int): TermGui =

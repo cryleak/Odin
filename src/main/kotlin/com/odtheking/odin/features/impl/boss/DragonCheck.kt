@@ -5,7 +5,7 @@ import com.odtheking.odin.utils.modMessage
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.item.Items
@@ -28,7 +28,7 @@ object DragonCheck {
     }
 
     fun dragonSpawn(packet: ClientboundAddEntityPacket) {
-        if (packet.type == EntityType.ENDER_DRAGON)
+        if (packet.type == EntityTypes.ENDER_DRAGON)
             WitherDragonsEnum.entries.find {
                 it.aabbDimensions.contains(Vec3(packet.x, packet.y, packet.z))
             }?.setAlive(packet.uuid)

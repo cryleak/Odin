@@ -12,7 +12,7 @@ import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Giant
-import net.minecraft.world.entity.monster.MagmaCube
+import net.minecraft.world.entity.monster.cubemob.MagmaCube
 import kotlin.jvm.optionals.getOrNull
 
 object KuudraUtils {
@@ -56,7 +56,7 @@ object KuudraUtils {
                         if (entity.mainHandItem.hoverName.string.endsWith("Head")) giantZombies.add(entity)
 
                     is MagmaCube ->
-                        if (entity.size == 30 && entity.getAttributeBaseValue(Attributes.MAX_HEALTH) == 100000.0)
+                        if (entity.getSize() == 30 && entity.getAttributeBaseValue(Attributes.MAX_HEALTH) == 100000.0)
                             kuudraEntity = entity
 
                     is ArmorStand -> {

@@ -14,13 +14,16 @@ class Font {
     }
 
     fun buffer(): ByteBuffer {
-        val bytes = cachedBytes ?: throw IllegalStateException("Font bytes not cached for font: $name")
+        val bytes = bytes()
 
         return ByteBuffer.allocateDirect(bytes.size)
             .order(ByteOrder.nativeOrder())
             .put(bytes)
             .flip() as ByteBuffer
     }
+
+    fun bytes(): ByteArray =
+        cachedBytes ?: throw IllegalStateException("Font bytes not cached for font: $name")
 
     override fun hashCode(): Int {
         return name.hashCode()

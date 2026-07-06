@@ -26,7 +26,7 @@ object KuudraInfo : Module(
     private val scaledHealth by BooleanSetting("Use Scaled", true, desc = "Use scaled health for the display meaning the health will update in tier 5 when below 25,000.").withDependency { kuudraHPDisplay }
     private val hud by HUD("Health Display", "Displays the current health of Kuudra.") { example ->
         if (!example && !KuudraUtils.inKuudra) return@HUD 0 to 0
-        textDim(if (example) "§a99.975M/240M§c❤" else getCurrentHealthDisplay(KuudraUtils.kuudraEntity?.health ?: return@HUD 0 to 0), 0, 0)
+        textDim(if (example) "§a99.975M/240M§c❤" else getCurrentHealthDisplay(KuudraUtils.kuudraEntity?.getHealth() ?: return@HUD 0 to 0), 0, 0)
     }
 
     init {
@@ -35,12 +35,12 @@ object KuudraInfo : Module(
 
             KuudraUtils.kuudraEntity?.let {
                 if (highlightKuudra)
-                    drawWireFrameBox(it.boundingBox, kuudraColor, depth = true)
+                    drawWireFrameBox(it.getBoundingBox(), kuudraColor, depth = true)
 
                 if (kuudraHPDisplay) {
                     drawText(
-                        getCurrentHealthDisplay(it.health),
-                        it.position().add(it.lookAngle.multiply(13.0, 13.0, 13.0).addVec(y = 10.0)), healthSize, depth = true
+                        getCurrentHealthDisplay(it.getHealth()),
+                        it.position().add(it.getLookAngle().multiply(13.0, 13.0, 13.0).addVec(y = 10.0)), healthSize, depth = true
                     )
                 }
             }

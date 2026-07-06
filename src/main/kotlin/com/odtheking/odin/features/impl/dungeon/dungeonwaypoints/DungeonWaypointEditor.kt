@@ -31,7 +31,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
     room.waypoints.forEach { waypoint ->
         if (waypoint.isClicked || waypoint.title == null) return@forEach
         event.drawText(
-            waypoint.title, waypoint.blockPos.center.add(0.0, 0.1 * titleScale, 0.0),
+            waypoint.title, net.minecraft.world.phys.Vec3.atCenterOf(waypoint.blockPos).add(0.0, 0.1 * titleScale, 0.0),
             titleScale, waypoint.depth
         )
     }
@@ -42,7 +42,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
 }
 
 internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
-    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.screen != null) return
+    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
     cacheEtherwarpTarget()
     if (!allowEdits) return
     val room = DungeonUtils.currentRoom ?: return
@@ -98,12 +98,12 @@ private fun DungeonWaypoints.openWaypointTitlePrompt(
     aabb: AABB,
     editableWaypoints: MutableList<DungeonWaypoint>,
 ) {
-    mc.setScreen(TextPromptScreen("Waypoint Name").setCallback { text ->
+    mc.gui.setScreen(TextPromptScreen("Waypoint Name").setCallback { text ->
         editableWaypoints.removeIf { it.blockPos == blockPos }
         editableWaypoints.add(createWaypoint(blockPos, aabb, text))
         devMessage("Added waypoint with $text at $blockPos")
         syncRoomToActive(room)
-        mc.setScreen(null)
+        mc.gui.setScreen(null)
         OdinMod.scope.launch { saveWaypoints() }
     })
 }

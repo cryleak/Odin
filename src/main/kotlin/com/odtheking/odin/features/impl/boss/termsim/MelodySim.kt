@@ -11,12 +11,12 @@ import net.minecraft.world.item.Items
 object MelodySim : TermSimGUI(
     TerminalTypes.MELODY.termName, TerminalTypes.MELODY.windowSize
 ) {
-    private val magentaPane get() = ItemStack(Items.MAGENTA_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val greenPane   get() = ItemStack(Items.LIME_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val redPane     get() = ItemStack(Items.RED_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val whitePane   get() = ItemStack(Items.WHITE_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val redClay     get() = ItemStack(Items.RED_TERRACOTTA).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val greenClay   get() = ItemStack(Items.LIME_TERRACOTTA).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val magentaPane get() = ItemStack(Items.STAINED_GLASS_PANE.magenta()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val greenPane   get() = ItemStack(Items.STAINED_GLASS_PANE.lime()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val redPane     get() = ItemStack(Items.STAINED_GLASS_PANE.red()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val whitePane   get() = ItemStack(Items.STAINED_GLASS_PANE.white()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val redClay     get() = ItemStack(Items.DYED_TERRACOTTA.red()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val greenClay   get() = ItemStack(Items.DYED_TERRACOTTA.lime()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
 
     private var magentaColumn = 1
     private var limeColumn = 2

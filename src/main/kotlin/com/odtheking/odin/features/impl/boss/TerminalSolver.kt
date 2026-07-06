@@ -32,7 +32,7 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
+    val firstClickProt by NumberSetting("First Click Protection", 500, 0, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
     val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
@@ -117,10 +117,10 @@ object TerminalSolver : Module(
 
     fun GuiGraphicsExtractor.renderDebug() {
         if (debug) TerminalUtils.currentTerm?.let { term ->
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
+            val menu = (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu ?: return@let
             val debugInfo = listOf(
                 "§7Type: §f${term.type.name}",
-                "§7Window Name: §f${mc.screen?.title?.string}",
+                "§7Window Name: §f${mc.gui.screen()?.title?.string}",
                 "§7Container ID: §f${menu.containerId}",
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
                 "§7Is Clicked: §f${term.isClicked}",

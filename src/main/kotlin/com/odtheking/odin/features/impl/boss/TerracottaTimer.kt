@@ -35,7 +35,7 @@ object TerracottaTimer : Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(6) || terracottaSpawning.isEmpty()) return@on
             terracottaSpawning.forEach {
-                drawText("§${getColor(it.time)}${it.time.toFixed()}s", it.pos.center, 2f, false)
+                drawText("§${getColor(it.time)}${it.time.toFixed()}s", net.minecraft.world.phys.Vec3.atCenterOf(it.pos), 2f, false)
             }
         }
     }

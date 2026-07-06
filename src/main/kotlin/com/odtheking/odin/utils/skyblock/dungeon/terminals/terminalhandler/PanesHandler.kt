@@ -10,7 +10,7 @@ class PanesHandler: TerminalHandler(TerminalTypes.PANES) {
 
     override fun solve(items: List<ItemStack>): List<Int> {
         return items.mapIndexedNotNull { index, item ->
-            if (item.item == Items.RED_STAINED_GLASS_PANE) index else null
+            if (item.item == Items.STAINED_GLASS_PANE.red()) index else null
         }
     }
 

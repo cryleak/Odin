@@ -121,7 +121,7 @@ object WitherDragons : Module(
                 if (dragonTimer && dragon.timeToSpawn > 0) {
                     drawText(
                         "§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}",
-                        dragon.spawnPos.center, 5f, false
+                        net.minecraft.world.phys.Vec3.atCenterOf(dragon.spawnPos), 5f, false
                     )
                 }
 
@@ -131,7 +131,7 @@ object WitherDragons : Module(
 
             priorityDragon?.let { dragon ->
                 if (dragonTracers && dragon.state == WitherDragonState.SPAWNING)
-                    mc.player?.let { drawTracer(dragon.spawnPos.center, dragon.color, true) }
+                    mc.player?.let { drawTracer(net.minecraft.world.phys.Vec3.atCenterOf(dragon.spawnPos), dragon.color, true) }
             }
         }
 

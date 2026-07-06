@@ -102,7 +102,7 @@ object WorldScan {
 
         val type = when (chunk.getBlockState(position.x, 69, position.z).block) {
             Blocks.COAL_BLOCK -> DoorType.Wither
-            Blocks.RED_TERRACOTTA -> DoorType.Blood
+            Blocks.DYED_TERRACOTTA.red() -> DoorType.Blood
             else -> DoorType.Normal
         }
         val doorPos = ((chunkPosition - 1) / 2) + 6

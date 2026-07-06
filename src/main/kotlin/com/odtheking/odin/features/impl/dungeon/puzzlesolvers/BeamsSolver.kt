@@ -52,7 +52,7 @@ object BeamsSolver {
             event.drawStyledBox(AABB(positions.value.first), color, depth = true, style = beamStyle)
 
             if (beamsTracer)
-                event.drawLine(listOf(positions.key.center, positions.value.first.center), color = color, depth = false)
+                event.drawLine(listOf(net.minecraft.world.phys.Vec3.atCenterOf(positions.key), net.minecraft.world.phys.Vec3.atCenterOf(positions.value.first)), color = color, depth = false)
         }
     }
 

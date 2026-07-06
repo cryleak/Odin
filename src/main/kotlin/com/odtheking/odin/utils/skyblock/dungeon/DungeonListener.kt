@@ -14,7 +14,7 @@ import com.odtheking.odin.utils.romanToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.*
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.player.Player
 import kotlin.jvm.optionals.getOrNull
 
@@ -124,7 +124,7 @@ object DungeonListener {
         }
 
         onReceive<ClientboundAddEntityPacket> {
-            if (type == EntityType.PLAYER)
+            if (type == EntityTypes.PLAYER)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == mc.level?.getEntity(id)?.name?.string }?.entity =
                     mc.level?.getEntity(id) as? Player
         }

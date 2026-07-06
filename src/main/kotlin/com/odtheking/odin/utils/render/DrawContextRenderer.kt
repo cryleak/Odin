@@ -4,6 +4,9 @@ import com.odtheking.odin.utils.Color.Companion.alpha
 import com.odtheking.odin.utils.Color.Companion.blue
 import com.odtheking.odin.utils.Color.Companion.green
 import com.odtheking.odin.utils.Color.Companion.red
+import com.odtheking.odin.utils.ui.rendering.Gradient as SkijaGradient
+import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
+import com.odtheking.odin.utils.ui.rendering.SkijaRenderer
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object DrawContextRenderer {
@@ -98,12 +101,43 @@ object DrawContextRenderer {
         topLeftColor: Int, topRightColor: Int, bottomRightColor: Int,
         bottomLeftColor: Int, options: RoundedOptions
     ) {
-        RoundRectPIPRenderer.submit(
-            guiGraphics, x0, y0, x1, y1,
-            topLeftColor, topRightColor, bottomRightColor, bottomLeftColor,
-            options.radii.topLeft, options.radii.topRight, options.radii.bottomRight, options.radii.bottomLeft,
-            options.outline?.color ?: 0, options.outline?.width ?: 0.0f
-        )
+        val width = x1 - x0
+        val height = y1 - y0
+        if (width <= 0 || height <= 0) return
+
+        val radii = options.radii
+        val outline = options.outline
+        NVGPIPRenderer.draw(guiGraphics, x0, y0, width, height, NVGPIPRenderer.CoordinateSpace.GUI) {
+            if (topLeftColor.alpha > 0 || topRightColor.alpha > 0 || bottomRightColor.alpha > 0 || bottomLeftColor.alpha > 0) {
+                if (topLeftColor == topRightColor && topLeftColor == bottomRightColor && topLeftColor == bottomLeftColor) {
+                    SkijaRenderer.rect(
+                        x0.toFloat(), y0.toFloat(), width.toFloat(), height.toFloat(), topLeftColor,
+                        radii.topLeft, radii.topRight, radii.bottomRight, radii.bottomLeft
+                    )
+                } else {
+                    val (start, end, direction) = gradient(topLeftColor, topRightColor, bottomRightColor, bottomLeftColor)
+                    SkijaRenderer.gradientRect(
+                        x0.toFloat(), y0.toFloat(), width.toFloat(), height.toFloat(), start, end, direction,
+                        radii.topLeft, radii.topRight, radii.bottomRight, radii.bottomLeft
+                    )
+                }
+            }
+
+            if (outline != null && outline.width > 0f && outline.color.alpha > 0) {
+                SkijaRenderer.hollowRect(
+                    x0.toFloat(), y0.toFloat(), width.toFloat(), height.toFloat(), outline.width, outline.color,
+                    radii.topLeft, radii.topRight, radii.bottomRight, radii.bottomLeft
+                )
+            }
+        }
+    }
+
+    private fun gradient(topLeft: Int, topRight: Int, bottomRight: Int, bottomLeft: Int): Triple<Int, Int, SkijaGradient> {
+        return if (topLeft == topRight && bottomLeft == bottomRight) {
+            Triple(topLeft, bottomLeft, SkijaGradient.TopToBottom)
+        } else {
+            Triple(topLeft, if (topRight == bottomRight) topRight else bottomRight, SkijaGradient.LeftToRight)
+        }
     }
 
     private fun gradientCorners(startColor: Int, endColor: Int, direction: GradientDirection): IntArray {

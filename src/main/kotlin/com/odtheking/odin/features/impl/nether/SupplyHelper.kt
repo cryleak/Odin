@@ -79,7 +79,7 @@ object SupplyHelper : Module(
                 Supply.entries.forEach { type ->
                     drawText(
                         "§e${type.name}",
-                        type.pickUpSpot.center, 2f, true
+                        net.minecraft.world.phys.Vec3.atCenterOf(type.pickUpSpot), 2f, true
                     )
                 }
             }

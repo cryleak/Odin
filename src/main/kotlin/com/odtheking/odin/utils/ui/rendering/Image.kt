@@ -15,6 +15,7 @@ class Image(
     var stream: InputStream = getStream(identifier),
     private var buffer: ByteBuffer? = null
 ) {
+    private var cachedBytes: ByteArray? = null
 
     init {
         isSVG = identifier.endsWith(".svg", true)
@@ -22,11 +23,19 @@ class Image(
 
     fun buffer(): ByteBuffer {
         if (buffer == null) {
-            val bytes = stream.readBytes()
+            val bytes = bytes()
             buffer = MemoryUtil.memAlloc(bytes.size).put(bytes).flip() as ByteBuffer
-            stream.close()
         }
         return buffer ?: throw IllegalStateException("Image has no data")
+    }
+
+    fun bytes(): ByteArray {
+        var bytes = cachedBytes
+        if (bytes == null) {
+            bytes = stream.use { it.readBytes() }
+            cachedBytes = bytes
+        }
+        return bytes
     }
 
     override fun equals(other: Any?): Boolean {

@@ -12,13 +12,13 @@ class MelodyHandler: TerminalHandler(TerminalTypes.MELODY) {
     override fun canSolve(items: List<ItemStack>, currentIndex: Int): Boolean = true
 
     override fun solve(items: List<ItemStack>): List<Int> {
-        val magentaPane = items.indexOfFirst { it.item == Items.MAGENTA_STAINED_GLASS_PANE }
-        val greenPane = items.indexOfLast { it.item == Items.LIME_STAINED_GLASS_PANE }
-        val greenClay = items.indexOfLast { it.item == Items.LIME_TERRACOTTA }
+        val magentaPane = items.indexOfFirst { it.item == Items.STAINED_GLASS_PANE.magenta() }
+        val greenPane = items.indexOfLast { it.item == Items.STAINED_GLASS_PANE.lime() }
+        val greenClay = items.indexOfLast { it.item == Items.DYED_TERRACOTTA.lime() }
 
         return items.mapIndexedNotNull { index, item ->
             when {
-                index == greenPane || item.item == Items.MAGENTA_STAINED_GLASS_PANE -> index
+                index == greenPane || item.item == Items.STAINED_GLASS_PANE.magenta() -> index
                 index == greenClay && greenPane % 9 == magentaPane % 9 -> index
                 else -> null
             }

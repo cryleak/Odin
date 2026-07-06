@@ -77,15 +77,15 @@ object LividSolver : Module(
     }
 
     private enum class Livid(val entityName: String, val colorCode: Char, val color: Color, val wool: Block) {
-        VENDETTA("Vendetta", 'f', Colors.WHITE, Blocks.WHITE_WOOL),
-        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, Blocks.MAGENTA_WOOL),
-        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, Blocks.YELLOW_WOOL),
-        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, Blocks.LIME_WOOL),
-        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, Blocks.GRAY_WOOL),
-        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, Blocks.PURPLE_WOOL),
-        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, Blocks.BLUE_WOOL),
-        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, Blocks.GREEN_WOOL),
-        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, Blocks.RED_WOOL);
+        VENDETTA("Vendetta", 'f', Colors.WHITE, Blocks.WOOL.white()),
+        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, Blocks.WOOL.magenta()),
+        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, Blocks.WOOL.yellow()),
+        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, Blocks.WOOL.lime()),
+        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, Blocks.WOOL.gray()),
+        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, Blocks.WOOL.purple()),
+        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, Blocks.WOOL.blue()),
+        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, Blocks.WOOL.green()),
+        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, Blocks.WOOL.red());
 
         var entity: Player? = null
     }

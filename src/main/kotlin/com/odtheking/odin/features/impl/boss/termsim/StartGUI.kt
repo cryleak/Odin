@@ -23,16 +23,16 @@ object StartGUI : TermSimGUI(
     }
 
     private fun buildTermItems() = listOf(
-        buildTermItem(TerminalTypes.PANES, Items.LIME_DYE, "§a"),
-        buildTermItem(TerminalTypes.RUBIX, Items.RED_DYE, "§6"),
-        buildTermItem(TerminalTypes.NUMBERS, Items.CYAN_DYE, "§3"),
-        buildTermItem(TerminalTypes.STARTS_WITH, Items.PINK_DYE, "§5"),
-        buildTermItem(TerminalTypes.SELECT, Items.BROWN_DYE, "§b"),
-        buildTermItem(TerminalTypes.MELODY, Items.PURPLE_DYE, "§d")
+        buildTermItem(TerminalTypes.PANES, Items.DYE.lime(), "§a"),
+        buildTermItem(TerminalTypes.RUBIX, Items.DYE.red(), "§6"),
+        buildTermItem(TerminalTypes.NUMBERS, Items.DYE.cyan(), "§3"),
+        buildTermItem(TerminalTypes.STARTS_WITH, Items.DYE.pink(), "§5"),
+        buildTermItem(TerminalTypes.SELECT, Items.DYE.brown(), "§b"),
+        buildTermItem(TerminalTypes.MELODY, Items.DYE.purple(), "§d")
     )
 
-    private val resetButton = ItemStack(Items.BLACK_DYE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§cReset PBs!")) }
-    private val randomButton = ItemStack(Items.WHITE_DYE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§7Random")) }
+    private val resetButton = ItemStack(Items.DYE.black()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§cReset PBs!")) }
+    private val randomButton = ItemStack(Items.DYE.white()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§7Random")) }
 
     fun getTermPB(type: TerminalTypes): List<Component> {
         val pb = TerminalSimulator.termSimPBs.get(type.name) ?: return listOf(Component.literal("§7No PB set!"))

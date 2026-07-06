@@ -17,6 +17,9 @@ operator fun BlockPos.component1(): Int = x
 operator fun BlockPos.component2(): Int = y
 operator fun BlockPos.component3(): Int = z
 
+val BlockPos.center: Vec3
+    get() = Vec3.atCenterOf(this)
+
 operator fun Vec3.unaryMinus(): Vec3 = Vec3(-x, -y, -z)
 
 fun Vec3.floorVec(): Vec3 =

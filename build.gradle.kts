@@ -32,14 +32,18 @@ dependencies {
 
     compileOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
-    property("minecraft_lwjgl_version").let { lwjglVersion ->
-        implementation("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
-        include("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
+    val skijaVersion = "0.143.17"
+    val humbleTypesVersion = "0.2.0"
 
-        listOf("windows", "linux", "macos", "macos-arm64").forEach { os ->
-            implementation("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-$os")
-            include("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-$os")
-        }
+    implementation("io.github.humbleui:types:$humbleTypesVersion")
+    include("io.github.humbleui:types:$humbleTypesVersion")
+
+    implementation("io.github.humbleui:skija-shared:$skijaVersion")
+    include("io.github.humbleui:skija-shared:$skijaVersion")
+
+    listOf("windows-x64", "linux-x64", "macos-x64", "macos-arm64").forEach { platform ->
+        runtimeOnly("io.github.humbleui:skija-$platform:$skijaVersion")
+        include("io.github.humbleui:skija-$platform:$skijaVersion")
     }
 
     compileOnly("maven.modrinth:iris:${property("iris")}")

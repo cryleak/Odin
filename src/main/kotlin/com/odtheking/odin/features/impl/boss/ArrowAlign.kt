@@ -93,7 +93,7 @@ object ArrowAlign : Module(
                 }
                 drawText(
                     "§$colorCode$clickNeeded",
-                    getFramePositionFromIndex(index).center.addVec(y = 0.1, x = -0.3),
+                    net.minecraft.world.phys.Vec3.atCenterOf(getFramePositionFromIndex(index)).addVec(y = 0.1, x = -0.3),
                     1f, false
                 )
             }

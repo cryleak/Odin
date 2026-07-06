@@ -79,15 +79,15 @@ object OdinMod : ClientModInitializer {
         ).forEach { EventBus.subscribe(it) }
 
         PictureInPictureRendererRegistry.register { context ->
-            NVGPIPRenderer(context.bufferSource())
+            NVGPIPRenderer()
         }
 
         PictureInPictureRendererRegistry.register { context ->
-            RoundRectPIPRenderer(context.bufferSource())
+            RoundRectPIPRenderer()
         }
 
         PictureInPictureRendererRegistry.register { context ->
-            ItemStateRenderer(context.bufferSource())
+            ItemStateRenderer()
         }
 
         val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
