@@ -8,7 +8,6 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
-import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
@@ -132,9 +131,9 @@ object LeapMenu : Module(
                         scale * (BOX_HEIGHT + grow * 2f) / BOX_HEIGHT
                     )
 
-                    guiGraphics.roundedFill(
+                    guiGraphics.fill(
                         localX, localY, localX + BOX_WIDTH, localY + BOX_HEIGHT,
-                        (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9
+                        (if (colorStyle) player.clazz.color else backgroundColor).rgba
                     )
 
                     val face = (BOX_HEIGHT * 0.76).toInt()
