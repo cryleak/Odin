@@ -247,9 +247,9 @@ private fun PoseStack.renderQueuedTexts(consumer: List<TextData>, submitter: Sub
             Component.literal(textData.text).visualOrderText,
             true,
             if (textData.depth) Font.DisplayMode.POLYGON_OFFSET else Font.DisplayMode.SEE_THROUGH,
+            LightCoordsUtil.FULL_BRIGHT,
             -1,
             0,
-            LightCoordsUtil.FULL_BRIGHT,
             0
         )
 

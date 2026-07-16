@@ -94,24 +94,6 @@ object WorldScan {
         }
     }
 
-    private fun scanDoor(chunk: LevelChunk, chunkPosition: IVec2, rotation: DoorRotation) {
-        if (DungeonScan.doors.contains(chunkPosition)) return
-        val position = (chunkPosition * 16) + 7
-
-        for (y in 86..160) {
-            if (!chunk.getBlockState(position.x, y, position.z).isAir) return
-        }
-        if (chunk.getBlockState(position.x, 68, position.z).isAir) return
-
-        val type = when (chunk.getBlockState(position.x, 69, position.z).block) {
-            Blocks.COAL_BLOCK -> DoorType.Wither
-            Blocks.DYED_TERRACOTTA.red() -> DoorType.Blood
-            else -> DoorType.Normal
-        }
-        val doorPos = ((chunkPosition - 1) / 2) + 6
-        DungeonScan.doors[chunkPosition] = DungeonDoor(doorPos, rotation, type, doorPos.x + doorPos.z * 6, doorPos.x + rotation.offset.x + (doorPos.z + rotation.offset.z) * 6)
-    }
-
     private fun scanRoom(chunk: LevelChunk, chunkPosition: IVec2) {
         val (core, highestBlock) = getRoomCore(chunk, (chunkPosition * 16) + 7)
         val data = RoomData.getRoomData(core) ?: run {
