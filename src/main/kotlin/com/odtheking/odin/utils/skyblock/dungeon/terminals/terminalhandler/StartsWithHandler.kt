@@ -26,9 +26,23 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
         }
 
         return items.mapIndexedNotNull { index, item ->
-            if (item.hoverName.string.startsWith(letter, true) && !item.hasGlint() && index !in clickedSlots) index else null
+            if (item.hoverName.string.startsWith(letter, true) &&
+                index !in clickedSlots &&
+                (!item.hasGlint() || item.item == Items.NETHER_STAR || item.item == Items.EXPERIENCE_BOTTLE)
+            ) index else null
         }
     }
+
+            }
+        }
+
+        override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
+            val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
+            if (canClick(slotIndex, button) && clickedSlot == null)
+                clickedSlot = screenHandler.containerId to slotIndex
+
+            super.click(slotIndex, button, simulateClick)
+        }
 
     override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         val screenHandler = (mc.gui.screen() as? ContainerScreen)?.menu ?: return
@@ -40,3 +54,4 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
 
     override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.startsWithColor to null
 }
+

@@ -86,8 +86,11 @@ object WorldScan {
         val rowEven = chunkPosition.x % 2 == 0
 
         if (chunkPosition.x in -12..-2 && chunkPosition.z in -12..-2) {
-            if (rowEven && columnEven) scanRoom(chunk, chunkPosition)
-            else if (rowEven || columnEven) scanDoor(chunk, chunkPosition, if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical)
+            if (rowEven && columnEven) {
+                val tilePos = (chunkPosition / 2) + 6
+                val tile = DungeonScan.tiles.getOrNull(tilePos.x + tilePos.z * 6)
+                if (tile?.room?.data == null) scanRoom(chunk, chunkPosition)
+            }
         }
     }
 
@@ -111,7 +114,10 @@ object WorldScan {
 
     private fun scanRoom(chunk: LevelChunk, chunkPosition: IVec2) {
         val (core, highestBlock) = getRoomCore(chunk, (chunkPosition * 16) + 7)
-        val data = RoomData.getRoomData(core) ?: return modMessage("Unknown room data for core: $core $chunkPosition")
+        val data = RoomData.getRoomData(core) ?: run {
+            if (core == -318865360) return
+            else return devMessage("Unknown room data for core: $core $chunkPosition")
+        }
 
         val tilePosition = (chunkPosition / 2) + 6
         val tile = DungeonScan.tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
@@ -126,6 +132,7 @@ object WorldScan {
         }
 
         if (tile.room !== room) {
+            room.highestBlock = highestBlock
             tile.room = room
             room.addSegment(tile)
         }
@@ -134,8 +141,6 @@ object WorldScan {
             room.data = data
             room.type = data.type
         }
-
-        if (room.tiles.size == data.shape.tileAmount) room.inferLayout(highestBlock)
     }
 
     private val stringBuilder = StringBuilder(1024)
